@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export default function useAuth() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ profile: { displayName: string } } | null>(null);
 
     useEffect(() => {
         fetch("/api/me", {
