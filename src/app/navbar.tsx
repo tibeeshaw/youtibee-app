@@ -10,10 +10,10 @@ export default function Navbar() {
             {user ? (
                 <div>
                     <p>Welcome, {user.profile?.displayName} 👋</p>
-                    <a href={`${process.env.API_URL}/logout`}>Logout</a>
+                    <a href={`${process.env.NEXT_PUBLIC_API_URL}/logout`}>Logout</a>
                 </div>
             ) : (
-                <a href={`${process.env.API_URL}/auth/google`}>Login with Google</a>
+                <a href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}>Login with Google</a>
             )}
         </nav>
     );
