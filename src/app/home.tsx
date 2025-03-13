@@ -141,9 +141,6 @@ export default function Home() {
         }
     }, [user]);
 
-
-
-
     return (
         <div>
             <h1>YouTube Music Video Analytics</h1>
