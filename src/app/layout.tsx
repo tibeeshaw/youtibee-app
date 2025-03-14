@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import NextAuthProvider from "./context/NextAuthProvider";
+import { StoreProvider } from "./context/StoreProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +26,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr-FR">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <StoreProvider>
+          <NextAuthProvider>
+            {children}
+          </NextAuthProvider>
+          {/* <VercelAnalytics /> */}
+          <SpeedInsights />
+        </StoreProvider>
       </body>
     </html>
   );

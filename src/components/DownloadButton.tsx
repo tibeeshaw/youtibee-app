@@ -1,0 +1,30 @@
+import { useState } from "react";
+
+export default function DownloadButton({ videoId }: { videoId: string }) {
+    const [loading, setLoading] = useState(false);
+
+    const handleDownload = async () => {
+        setLoading(true);
+        const response = await fetch(`/api/youtube/download/audio?id=${videoId}`);
+        if (response.status === 200) {
+            const blob = await response.blob();
+            const link = document.createElement("a");
+
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "audio.mp3";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            console.error(response);
+        }
+
+        setLoading(false);
+    };
+
+    return (
+        <button onClick={handleDownload} disabled={loading}>
+            {loading ? "Downloading..." : "Download as MP3"}
+        </button>
+    );
+}

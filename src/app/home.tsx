@@ -1,6 +1,7 @@
 'use client'
-import useAuth from "@/hooks/useAuth";
-import { useState, useEffect } from "react";
+import DownloadButton from "@/components/DownloadButton";
+import { useSession } from "next-auth/react";
+import { useEffect, useMemo, useState } from "react";
 
 export type SnippetType = {
     publishedAt: string;
@@ -97,7 +98,9 @@ export type PlaylistItems = {
 }
 
 export default function Home() {
-    const user = useAuth();
+    const session = useSession();
+    const token = useMemo(() => session.data?.user.accessToken, [session]);
+
 
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [selectedPlaylist, setSelectedPlaylist] = useState<SnippetType | null>(null);
@@ -108,16 +111,24 @@ export default function Home() {
     const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
 
     useEffect(() => {
-        if (user) {
-            fetch('/api/liked-videos')
+        if (token) {
+            fetch('/api/youtube/liked-videos', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
                 .then(res => res.json())
                 .then(data => setVideos(data));
         }
-    }, [user]);
+    }, [token]);
 
     const fetchAnalytics = (videoId: string) => {
-        if (user) {
-            fetch(`/api/analytics/${videoId}`)
+        if (token) {
+            fetch(`/api/youtube/analytics/${videoId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
                 .then(res => res.json())
                 .then(data => setAnalytics(data));
         }
@@ -125,21 +136,29 @@ export default function Home() {
 
 
     const fetchPlaylist = (id: string) => {
-        if (user) {
-            fetch(`/api/playlists/${id}`)
+        if (token) {
+            fetch(`/api/youtube/playlists/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
                 .then(res => res.json())
                 .then(data => setPlaylist(data));
         }
     };
 
     useEffect(() => {
-        if (user) {
-            fetch('/api/playlists')
+        if (token) {
+            fetch('/api/youtube/playlists', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
                 .then(res => res.json())
                 .then(data => setPlaylists(data))
                 .catch(err => console.error(err));
         }
-    }, [user]);
+    }, [token]);
 
     return (
         <div>
@@ -151,6 +170,7 @@ export default function Home() {
                         <button onClick={() => { setSelectedVideo(video.snippet); fetchAnalytics(video.id); }}>
                             View Analytics
                         </button>
+                        <DownloadButton videoId={`${video.id}`} />
                     </li>
                 ))}
             </ul>
@@ -178,6 +198,7 @@ export default function Home() {
                                 <button onClick={() => { setSelectedVideo(video.snippet); fetchAnalytics(video.snippet.resourceId.videoId); }}>
                                     View Analytics
                                 </button>
+                                <DownloadButton videoId={`${video.snippet.resourceId.videoId}`} />
                             </li>
                         ))}
                     </ul>
