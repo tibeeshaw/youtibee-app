@@ -1,11 +1,20 @@
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useMemo, useState } from "react";
 
 export default function DownloadButton({ videoId }: { videoId: string }) {
     const [loading, setLoading] = useState(false);
+    const session = useSession();
+    const token = useMemo(() => session.data?.user.accessToken, [session]);
+
+
 
     const handleDownload = async () => {
         setLoading(true);
-        const response = await fetch(`/api/youtube/download/audio?id=${videoId}`);
+        const response = await fetch(`/api/youtube/download/audio?id=${videoId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         if (response.status === 200) {
             const blob = await response.blob();
             const link = document.createElement("a");
