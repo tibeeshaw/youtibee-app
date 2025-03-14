@@ -4,7 +4,6 @@ import { useSignInModal } from "@/components/sign-in-modal";
 import UserDropdown from "@/components/user-dropdown";
 import { User } from "lucide-react";
 import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
 import { memo } from "react";
 
 
@@ -39,7 +38,7 @@ const NavBar = memo(function NavBar({ session }: { session: Session | null }) {
                 )}
 
             </nav>
-            </>
+        </>
     );
 });
 

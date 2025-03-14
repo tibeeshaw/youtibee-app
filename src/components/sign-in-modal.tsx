@@ -1,7 +1,6 @@
 import Google from '@/app/icons/google';
 import LoadingDots from '@/app/icons/loading-dots';
 import { signIn } from 'next-auth/react';
-import Image from 'next/image';
 import Link from 'next/link';
 import {
   Dispatch,
@@ -43,11 +42,10 @@ const SignInModal = ({
         <div className="flex flex-col space-y-4 bg-primary-50 px-4 py-8 md:px-16">
           <button
             disabled={signInClicked}
-            className={`${
-              signInClicked
+            className={`${signInClicked
                 ? 'cursor-not-allowed border-primary-200 bg-primary-100'
                 : 'border border-primary-200 bg-white text-black hover:bg-primary-50'
-            } flex h-10 w-full items-center justify-center space-x-3 rounded-md border text-sm shadow-sm transition-all duration-75 focus:outline-hidden`}
+              } flex h-10 w-full items-center justify-center space-x-3 rounded-md border text-sm shadow-sm transition-all duration-75 focus:outline-hidden`}
             onClick={() => {
               setSignInClicked(true);
               signIn('google');
