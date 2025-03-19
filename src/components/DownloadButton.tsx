@@ -6,11 +6,15 @@ export default function DownloadButton({ videoId }: { videoId: string }) {
     const session = useSession();
     const token = useMemo(() => session.data?.user.accessToken, [session]);
 
+    const baseUrl = `https://youtibee-api-v2.onrender.com`;
+    // const baseUrl = `http://localhost:5001`;
+
+    const url = `${baseUrl}/download/audio?url=https://www.youtube.com/watch?v=${videoId}`
 
 
     const handleDownload = async () => {
         setLoading(true);
-        const response = await fetch(`https://youtibee-api-v2.onrender.com/download/audio?url=https://www.youtube.com/watch?v=${videoId}`, {
+        const response = await fetch(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -35,8 +39,11 @@ export default function DownloadButton({ videoId }: { videoId: string }) {
     };
 
     return (
-        <button onClick={handleDownload} disabled={loading}>
-            {loading ? "Downloading..." : "Download as MP3"}
-        </button>
+        // <button onClick={handleDownload} disabled={loading}>
+        //     {loading ? "Downloading..." : "Download as MP3"}
+        // </button>
+        <a href={url} >
+        {loading ? "Downloading..." : "Download as MP3"}
+    </a>
     );
 }
