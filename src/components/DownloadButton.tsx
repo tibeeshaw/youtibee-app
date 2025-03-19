@@ -10,7 +10,7 @@ export default function DownloadButton({ videoId }: { videoId: string }) {
 
     const handleDownload = async () => {
         setLoading(true);
-        const response = await fetch(`/api/youtube/download/audio?id=${videoId}`, {
+        const response = await fetch(`https://youtibee-api-v2.onrender.com/download/audio?url=https://www.youtube.com/watch?v=${videoId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -20,7 +20,10 @@ export default function DownloadButton({ videoId }: { videoId: string }) {
             const link = document.createElement("a");
 
             link.href = window.URL.createObjectURL(blob);
-            link.download = "audio.mp3";
+            const contentDisposition = response.headers.get("content-disposition");
+            const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
+            const filename = filenameMatch ? filenameMatch[1] : "audio.mp3";
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
