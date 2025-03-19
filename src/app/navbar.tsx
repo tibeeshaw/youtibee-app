@@ -29,7 +29,7 @@ export default function Navbar() {
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
                             <a href="/" className="hover:text-white/90 transition-colors">
-                                Youtibee
+                                YouTibee
                             </a>
                         </motion.div>
                         <div className="flex items-center gap-4">

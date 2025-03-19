@@ -188,9 +188,9 @@ export default function Home() {
             <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-2xl font-bold mb-4"
+                className="text-2xl font-bold mb-4 text-white"
             >
-                YouTube Music Video Analytics
+                Browse and download your youtube videos
             </motion.h1>
 
             <motion.ul
@@ -268,7 +268,7 @@ export default function Home() {
                                         <div className="flex gap-1.5">
                                             <motion.button
                                                 onClick={() => window.open(`https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`, '_blank')}
-                                                className="cursor-pointer bg-red-500 text-white px-2.5 py-1.5 rounded text-base hover:bg-red-600 flex items-center gap-1"
+                                                className="cursor-pointer bg-red-500 text-sm text-white font-medium px-2.5 py-1.5 rounded hover:bg-red-600 flex items-center gap-1"
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
                                             >
