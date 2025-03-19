@@ -2,7 +2,7 @@ import Home from "./home";
 
 export default function HomePage() {
   return (
-    <div className="items-center justify-items-center min-h-screen px-4 pb-20 gap-16 sm:px-8 font-[family-name:var(--font-geist-sans)] text-black">
+    <div className="items-center justify-items-center min-h-screen pb-20 gap-16 sm:px-8 font-[family-name:var(--font-geist-sans)] text-black">
       <main className="w-full flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
 
         <Home />
