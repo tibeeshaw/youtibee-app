@@ -24,3 +24,48 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.5);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+}
+
+/* 
+ Set the default cursor for buttons. 
+ */ 
+  
+ button, 
+ [role="button"] { 
+   cursor: pointer; 
+ } 
+  
+ /* 
+ Make sure disabled buttons don't get the pointer cursor. 
+ */ 
+ :disabled { 
+   cursor: default; 
+ } 

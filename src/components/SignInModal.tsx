@@ -11,7 +11,7 @@ import {
 } from 'react';
 import Modal from './modal';
 
-const SignInModal = ({
+export const SignInModal = ({
   showSignInModal,
   setShowSignInModal,
 }: {

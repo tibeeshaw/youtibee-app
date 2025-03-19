@@ -2,6 +2,7 @@
 import DownloadButton from "@/components/DownloadButton";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export type SnippetType = {
     publishedAt: string;
@@ -102,12 +103,12 @@ export default function Home() {
 
     useEffect(() => {
         if (session.status === 'unauthenticated') {
-          // If the user is not authenticated, force them to log in
-          signIn();
+            // If the user is not authenticated, force them to log in
+            signIn();
         }
-      }, [session]);
+    }, [session]);
 
-      
+
     const token = useMemo(() => {
         const accessToken = session.data?.user.accessToken;
         return accessToken;
@@ -118,8 +119,8 @@ export default function Home() {
     const [playlist, setPlaylist] = useState<PlaylistItem[] | null>(null);
 
     const [videos, setVideos] = useState<VideoType[]>([]);
-    const [selectedVideo, setSelectedVideo] = useState<SnippetType | null>(null);
-    const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
+    // const [selectedVideo, setSelectedVideo] = useState<SnippetType | null>(null);
+    // const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
 
     const [downloadApiUp, setDownloadApiUp] = useState(false);
 
@@ -140,7 +141,7 @@ export default function Home() {
                 .then(res => res.json())
                 .then(data => setVideos(data))
                 .catch(err => console.error(err));
-            }
+        }
     }, [token]);
 
     useEffect(() => {
@@ -156,18 +157,18 @@ export default function Home() {
         }
     }, [token]);
 
-    
-    const fetchAnalytics = (videoId: string) => {
-        if (token) {
-            fetch(`/api/analytics/${videoId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-                .then(res => res.json())
-                .then(data => setAnalytics(data));
-        }
-    };
+
+    // const fetchAnalytics = (videoId: string) => {
+    //     if (token) {
+    //         fetch(`/api/analytics/${videoId}`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         })
+    //             .then(res => res.json())
+    //             .then(data => setAnalytics(data));
+    //     }
+    // };
 
 
     const fetchPlaylist = (id: string) => {
@@ -184,56 +185,133 @@ export default function Home() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">YouTube Music Video Analytics</h1>
+            <motion.h1
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-2xl font-bold mb-4"
+            >
+                YouTube Music Video Analytics
+            </motion.h1>
 
-            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {playlists.map(playlist => (
-                <li key={playlist.id} className="bg-white shadow-md rounded-lg p-4">
-                <p className="font-semibold text-lg">{playlist.snippet.title}</p>
-                <button 
-                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    onClick={() => { setSelectedPlaylist(playlist.snippet); fetchPlaylist(playlist.id); }}
-                >
-                    View Playlist
-                </button>
-                </li>
-            ))}
-            </ul>
-
-            {selectedPlaylist && playlist && (
-            <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4">Playlist Selected: {selectedPlaylist.title}</h2>
-
-                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {playlist.map(video => (
-                    <li key={video.id} className="bg-white shadow-md rounded-lg p-4">
-                    <p className="font-semibold text-lg">{video.snippet.title}</p>
-                    <button 
-                        className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                        onClick={() => { setSelectedVideo(video.snippet); fetchAnalytics(video.snippet.resourceId.videoId); }}
+            <motion.ul
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="grid grid-rows-3 grid-flow-col gap-1 overflow-x-auto pb-4"
+            >
+                {playlists.filter((playlist) => playlist.snippet.thumbnails.default).map(playlist => (
+                    <motion.button
+                        key={playlist.id}
+                        className="cursor-pointer bg-gradient-to-b from-fuchsia-600 to-orange-400 text-white shadow-md rounded m-1 p-[2px] w-[220px] h-[76px] flex items-center gap-1.5 text-left hover:shadow-lg transition-shadow"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => { setSelectedPlaylist(playlist.snippet); fetchPlaylist(playlist.id); }}
                     >
-                        View Analytics
-                    </button>
-                    <DownloadButton 
-                        videoId={`${video.snippet.resourceId.videoId}`} 
-                        videoTitle={video.snippet.title} 
-                        disabled={!downloadApiUp} 
-                    />
-                    </li>
+                        <img
+                            src={playlist.snippet.thumbnails.default.url}
+                            alt={playlist.snippet.title}
+                            className="w-[96x] h-[72px] rounded object-cover"
+                        />
+                        <p className="font-semibold text-sm flex-1 line-clamp-2 break-words h-[2.4em] leading-tight">{playlist.snippet.title}</p>
+                    </motion.button>
                 ))}
-                </ul>
-            </div>
-            )}
+            </motion.ul>
 
-            {selectedVideo && analytics && (
-            <div className="mt-8 bg-gray-100 p-4 rounded-lg shadow-md">
-                <h2 className="text-xl font-bold mb-4">Analytics for Video: {selectedVideo.title}</h2>
-                <p className="text-gray-700">Views: {analytics.viewCount}</p>
-                <p className="text-gray-700">Likes: {analytics.likeCount}</p>
-                <p className="text-gray-700">Comments: {analytics.commentCount}</p>
-            </div>
-            )}
+            <AnimatePresence>
+                {selectedPlaylist && playlist && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="mt-8"
+                    >
+                        <motion.div
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg p-4 text-white shadow-lg mb-6"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <div className="flex items-center gap-4">
+                                {selectedPlaylist.thumbnails.default && <img
+                                    src={selectedPlaylist.thumbnails.default.url}
+                                    alt={selectedPlaylist.title}
+                                    className="w-[120px] h-[90px]  rounded-lg object-cover shadow-md"
+                                />}
+                                <div>
+                                    <h2 className="text-xl font-bold mb-1">{selectedPlaylist.title}</h2>
+                                    <p className="text-sm opacity-90">{selectedPlaylist.channelTitle}</p>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        <motion.ul
+                            className="flex flex-wrap justify-center gap-5"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            {playlist.filter((video) => video.snippet.thumbnails.default).map((video, index) => (
+                                <motion.li
+                                    key={video.id}
+                                    className="bg-gray-800/80 shadow-md rounded-lg p-1 flex items-center gap-2 w-[360px]"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                // whileHover={{ scale: 1.01 }}
+                                >
+                                    <img
+                                        src={video.snippet.thumbnails.default.url}
+                                        alt={video.snippet.title}
+                                        className="w-[120px] h-[90px] rounded object-cover"
+                                    />
+                                    <div className="flex-1 h-[90px] flex flex-col justify-around">
+                                        <p className="font-medium text-sm text-gray-100 mb-1 line-clamp-2 break-words h-[2.4em] leading-tight">{video.snippet.title}</p>
+                                        <div className="flex gap-1.5">
+                                            <motion.button
+                                                onClick={() => window.open(`https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`, '_blank')}
+                                                className="cursor-pointer bg-red-500 text-white px-2.5 py-1.5 rounded text-base hover:bg-red-600 flex items-center gap-1"
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                            >
+                                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                                                </svg>
+                                                Watch
+                                            </motion.button>
+                                            <DownloadButton
+                                                videoId={`${video.snippet.resourceId.videoId}`}
+                                                videoTitle={video.snippet.title}
+                                                disabled={!downloadApiUp}
+                                            />
+                                        </div>
+                                    </div>
+                                </motion.li>
+                            ))}
+                        </motion.ul>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* <AnimatePresence>
+                {selectedVideo && analytics && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="mt-8 bg-gray-100 p-4 rounded-lg shadow-md"
+                    >
+                        <h2 className="text-xl font-bold mb-4">Analytics for Video: {selectedVideo.title}</h2>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <p className="text-gray-700">Views: {analytics.viewCount}</p>
+                            <p className="text-gray-700">Likes: {analytics.likeCount}</p>
+                            <p className="text-gray-700">Comments: {analytics.commentCount}</p>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence> */}
         </div>
-
     );
 }
