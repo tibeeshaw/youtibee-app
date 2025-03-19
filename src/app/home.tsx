@@ -1,6 +1,6 @@
 'use client'
 import DownloadButton from "@/components/DownloadButton";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 
 export type SnippetType = {
@@ -99,32 +99,68 @@ export type PlaylistItems = {
 
 export default function Home() {
     const session = useSession();
-    const token = useMemo(() => session.data?.user.accessToken, [session]);
 
+    useEffect(() => {
+        if (session.status === 'unauthenticated') {
+          // If the user is not authenticated, force them to log in
+          signIn();
+        }
+      }, [session]);
+
+      
+    const token = useMemo(() => {
+        const accessToken = session.data?.user.accessToken;
+        console.log('accessToken', accessToken);
+        return accessToken;
+    }, [session]);
 
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [selectedPlaylist, setSelectedPlaylist] = useState<SnippetType | null>(null);
-    const [playlist, setPlaylist] = useState<PlaylistItems | null>(null);
+    const [playlist, setPlaylist] = useState<PlaylistItem[] | null>(null);
 
     const [videos, setVideos] = useState<VideoType[]>([]);
     const [selectedVideo, setSelectedVideo] = useState<SnippetType | null>(null);
     const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
 
+    const [downloadApiUp, setDownloadApiUp] = useState(false);
+
+    useEffect(() => {
+        fetch('https://youtibee-api-v2.onrender.com/ping')
+            .then(res => res.json())
+            .then(() => setDownloadApiUp(true))
+            .catch(err => console.error(err));
+    }, [setDownloadApiUp]);
+
     useEffect(() => {
         if (token) {
-            fetch('/api/youtube/liked-videos', {
+            fetch('/api/liked', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             })
                 .then(res => res.json())
-                .then(data => setVideos(data));
+                .then(data => setVideos(data))
+                .catch(err => console.error(err));
+            }
+    }, [token]);
+
+    useEffect(() => {
+        if (token) {
+            fetch('/api/playlists', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+                .then(res => res.json())
+                .then(data => setPlaylists(data))
+                .catch(err => console.error(err));
         }
     }, [token]);
 
+    
     const fetchAnalytics = (videoId: string) => {
         if (token) {
-            fetch(`/api/youtube/analytics/${videoId}`, {
+            fetch(`/api/analytics/${videoId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -137,7 +173,7 @@ export default function Home() {
 
     const fetchPlaylist = (id: string) => {
         if (token) {
-            fetch(`/api/youtube/playlists/${id}`, {
+            fetch(`/api/playlists/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -146,19 +182,6 @@ export default function Home() {
                 .then(data => setPlaylist(data));
         }
     };
-
-    useEffect(() => {
-        if (token) {
-            fetch('/api/youtube/playlists', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-                .then(res => res.json())
-                .then(data => setPlaylists(data))
-                .catch(err => console.error(err));
-        }
-    }, [token]);
 
     return (
         <div>
@@ -170,7 +193,7 @@ export default function Home() {
                         <button onClick={() => { setSelectedVideo(video.snippet); fetchAnalytics(video.id); }}>
                             View Analytics
                         </button>
-                        <DownloadButton videoId={`${video.id}`} />
+                        <DownloadButton videoId={`${video.id}`} videoTitle={video.snippet.title} disabled={!downloadApiUp}/>
                     </li>
                 ))}
             </ul>
@@ -192,13 +215,13 @@ export default function Home() {
                     <h2>playlist selected: {selectedPlaylist.title}</h2>
 
                     <ul>
-                        {playlist.items.map(video => (
+                        {playlist.map(video => (
                             <li key={video.id}>
                                 <p>{video.snippet.title}</p>
                                 <button onClick={() => { setSelectedVideo(video.snippet); fetchAnalytics(video.snippet.resourceId.videoId); }}>
                                     View Analytics
                                 </button>
-                                <DownloadButton videoId={`${video.snippet.resourceId.videoId}`} />
+                                <DownloadButton videoId={`${video.snippet.resourceId.videoId}`} videoTitle={video.snippet.title} disabled={!downloadApiUp}/>
                             </li>
                         ))}
                     </ul>

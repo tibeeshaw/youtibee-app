@@ -1,6 +1,9 @@
 import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
+
+
+
 export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   // Configure one or more authentication providers
@@ -32,14 +35,22 @@ export const authOptions: AuthOptions = {
 
     },
     async jwt({ token, account, user }) {
-      console.log(token);
+      console.log('account', account);
       if (account) {
         token.id = user?.id;
         token.accessToken = account.access_token;
       }
-      return token;
+
+      const valid = await validateToken(token.accessToken as string);
+
+        return valid ? token : {};
+     
+
     },
     async session({ session, token }) {
+      if (!token.accessToken) {
+        throw new Error("Session expired. Please log in again.");
+      }
 
       if (session.user) {
         session.user.accessToken = token.accessToken as string;
@@ -48,3 +59,25 @@ export const authOptions: AuthOptions = {
     },
   }
 }
+
+const validateToken = async (token?: string): Promise<boolean> => {
+  let valid = false;
+    if(token){
+      console.log('token validation', token);
+        try {
+            // Call Google API to validate the token
+            const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`);
+            const data = await response.json();
+            if (data.error) {
+                console.error(data.error);
+            } else {
+              valid = true;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    console.log('token validation valid', valid);
+
+    return valid;
+};
