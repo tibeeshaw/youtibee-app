@@ -35,7 +35,15 @@ export default function DownloadButton({ videoId, videoTitle, disabled }: { vide
     };
 
     return (
-        <button onClick={handleDownload} disabled={loading || disabled}>
+        <button
+            onClick={handleDownload}
+            disabled={loading || disabled}
+            className={`px-4 py-2 rounded-lg text-white font-semibold transition-colors duration-300 ${
+            loading || disabled
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+        >
             {loading ? "Downloading..." : "Download as MP3"}
         </button>
     );

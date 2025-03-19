@@ -68,8 +68,9 @@ const validateToken = async (token?: string): Promise<boolean> => {
             // Call Google API to validate the token
             const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`);
             const data = await response.json();
-            if (data.error) {
-                console.error(data.error);
+            console.log('token validation data', data);
+            if (data.error || data.error_description) {
+                console.error(data.error || data.error_description);
             } else {
               valid = true;
             }

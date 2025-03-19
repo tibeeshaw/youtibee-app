@@ -110,7 +110,6 @@ export default function Home() {
       
     const token = useMemo(() => {
         const accessToken = session.data?.user.accessToken;
-        console.log('accessToken', accessToken);
         return accessToken;
     }, [session]);
 
@@ -184,61 +183,56 @@ export default function Home() {
     };
 
     return (
-        <div>
-            <h1>YouTube Music Video Analytics</h1>
-            <ul>
-                {videos.map(video => (
-                    <li key={video.id}>
-                        <p>{video.snippet.title}</p>
-                        <button onClick={() => { setSelectedVideo(video.snippet); fetchAnalytics(video.id); }}>
-                            View Analytics
-                        </button>
-                        <DownloadButton videoId={`${video.id}`} videoTitle={video.snippet.title} disabled={!downloadApiUp}/>
-                    </li>
-                ))}
+        <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4">YouTube Music Video Analytics</h1>
+
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {playlists.map(playlist => (
+                <li key={playlist.id} className="bg-white shadow-md rounded-lg p-4">
+                <p className="font-semibold text-lg">{playlist.snippet.title}</p>
+                <button 
+                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={() => { setSelectedPlaylist(playlist.snippet); fetchPlaylist(playlist.id); }}
+                >
+                    View Playlist
+                </button>
+                </li>
+            ))}
             </ul>
 
-            <div className="my-4"></div>
-
-            <ul>
-                {playlists.map(playlist => (
-                    <li key={playlist.id}>
-                        <p>{playlist.snippet.title}</p>
-                        <button onClick={() => { setSelectedPlaylist(playlist.snippet); fetchPlaylist(playlist.id); }}>
-                            View Playlist
-                        </button>
-                    </li>
-                ))}
-            </ul>
             {selectedPlaylist && playlist && (
-                <div>
-                    <h2>playlist selected: {selectedPlaylist.title}</h2>
+            <div className="mt-8">
+                <h2 className="text-xl font-bold mb-4">Playlist Selected: {selectedPlaylist.title}</h2>
 
-                    <ul>
-                        {playlist.map(video => (
-                            <li key={video.id}>
-                                <p>{video.snippet.title}</p>
-                                <button onClick={() => { setSelectedVideo(video.snippet); fetchAnalytics(video.snippet.resourceId.videoId); }}>
-                                    View Analytics
-                                </button>
-                                <DownloadButton videoId={`${video.snippet.resourceId.videoId}`} videoTitle={video.snippet.title} disabled={!downloadApiUp}/>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {playlist.map(video => (
+                    <li key={video.id} className="bg-white shadow-md rounded-lg p-4">
+                    <p className="font-semibold text-lg">{video.snippet.title}</p>
+                    <button 
+                        className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                        onClick={() => { setSelectedVideo(video.snippet); fetchAnalytics(video.snippet.resourceId.videoId); }}
+                    >
+                        View Analytics
+                    </button>
+                    <DownloadButton 
+                        videoId={`${video.snippet.resourceId.videoId}`} 
+                        videoTitle={video.snippet.title} 
+                        disabled={!downloadApiUp} 
+                    />
+                    </li>
+                ))}
+                </ul>
+            </div>
             )}
-
-            <div className="my-4"></div>
 
             {selectedVideo && analytics && (
-                <div>
-                    <h2>Analytics for Video ID: {selectedVideo.title}</h2>
-                    <p>Views: {analytics.viewCount}</p>
-                    <p>Likes: {analytics.likeCount}</p>
-                    <p>Comments: {analytics.commentCount}</p>
-                </div>
+            <div className="mt-8 bg-gray-100 p-4 rounded-lg shadow-md">
+                <h2 className="text-xl font-bold mb-4">Analytics for Video: {selectedVideo.title}</h2>
+                <p className="text-gray-700">Views: {analytics.viewCount}</p>
+                <p className="text-gray-700">Likes: {analytics.likeCount}</p>
+                <p className="text-gray-700">Comments: {analytics.commentCount}</p>
+            </div>
             )}
-
         </div>
 
     );

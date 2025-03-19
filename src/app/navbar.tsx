@@ -10,33 +10,34 @@ import { memo } from "react";
 const NavBar = memo(function NavBar({ session }: { session: Session | null }) {
     const { SignInModal, setShowSignInModal } = useSignInModal();
 
-    console.log(session);
-
     return (
         <>
             <SignInModal />
-            <nav>
-                {/* {user ? (
-                <div>
-                    <p>Welcome, {user.profile?.displayName} 👋</p>
-                    <a href={`${process.env.NEXT_PUBLIC_API_URL}/logout`}>Logout</a>
+            <nav className="bg-gray-800 text-white p-4 shadow-md">
+            <div className="container mx-auto flex items-center justify-between">
+                <div className="text-lg font-bold">
+                <a href="/" className="hover:text-gray-300">
+                    Youtibee
+                </a>
                 </div>
-            ) : (
-                <a href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}>Login with Google</a>
-            )} */}
-
+                <div className="flex items-center space-x-4"></div>
+                {session && (
+                    <p className="hidden sm:block">
+                    Welcome, {session.user.name} 👋
+                    </p>
+                )}
                 {session ? (
                     <UserDropdown session={session} />
                 ) : (
                     <button
-                        title="User"
-                        className="text-primary-900 hover:text-primary-900/80 dark:text-white/80 dark:hover:text-white mr-1 rounded-full"
-                        onClick={() => setShowSignInModal(true)}
+                    title="User"
+                    className="text-gray-300 hover:text-white rounded-full p-2"
+                    onClick={() => setShowSignInModal(true)}
                     >
-                        <User className="m-1" />
+                    <User className="w-6 h-6" />
                     </button>
                 )}
-
+                </div>
             </nav>
         </>
     );
