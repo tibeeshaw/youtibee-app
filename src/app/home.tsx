@@ -125,7 +125,7 @@ export default function Home() {
     const [downloadApiUp, setDownloadApiUp] = useState(false);
 
     useEffect(() => {
-        fetch('https://youtibee-api-v2.onrender.com/ping')
+        fetch('/api/download')
             .then(res => res.json())
             .then(() => setDownloadApiUp(true))
             .catch(err => console.error(err));
