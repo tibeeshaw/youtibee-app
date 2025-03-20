@@ -1,7 +1,7 @@
 'use client'
 import DownloadButton from "@/components/DownloadButton";
 import { signIn, useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export type SnippetType = {
@@ -93,6 +93,13 @@ export type PlaylistItem = {
     };
 };
 
+export type RateLimit = {
+    email: string;
+    requests_used: number;
+    requests_remaining: number;
+    limit: number;
+    window_seconds: number;
+};
 
 export type PlaylistItems = {
     items: PlaylistItem[]
@@ -123,6 +130,9 @@ export default function Home() {
     // const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
 
     const [downloadApiUp, setDownloadApiUp] = useState(false);
+    const [fetchingRate, setFetchingRate] = useState(false);
+    
+    const [rate, setRate] = useState<RateLimit | null>(null);
 
     useEffect(() => {
         fetch('/api/download')
@@ -130,6 +140,23 @@ export default function Home() {
             .then(() => setDownloadApiUp(true))
             .catch(err => console.error(err));
     }, [setDownloadApiUp]);
+
+    const fetchRate = useCallback(async () => {
+        if(token){
+            await fetch('/api/download/rate', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then(res => res.json())
+            .then((data) => setRate(data))
+            .catch(err => console.error(err));
+        }
+    }, [setRate, token]);
+
+    useEffect(() => {
+        fetchRate();
+    }, [fetchRate]);
 
     useEffect(() => {
         if (token) {
@@ -183,6 +210,14 @@ export default function Home() {
         }
     };
 
+    const onDownload = async () => {
+        setFetchingRate(true);
+        setTimeout(async () => {
+            await fetchRate();
+            setFetchingRate(false);
+        }, 1000);
+    }
+
     return (
         <div className="container mx-auto p-4">
             <motion.h1
@@ -193,18 +228,39 @@ export default function Home() {
                 Browse and download your youtube videos
             </motion.h1>
 
+            {rate && (
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gray-800/80 text-white p-4 rounded-lg shadow-md mb-4"
+                >
+                    <p className="text-sm">
+                        <strong>Requests Used:</strong> {rate.requests_used} / {rate.limit}
+                    </p>
+                    <p className="text-sm">
+                        <strong>Requests Remaining:</strong> {rate.requests_remaining}
+                    </p>
+                    <p className="text-sm">
+                        <strong>Rate Limit Window:</strong> {rate.window_seconds} seconds
+                    </p>
+                </motion.div>
+            )}
+
             <motion.ul
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="grid grid-rows-3 grid-flow-col gap-1 overflow-x-auto pb-4"
             >
-                {playlists.filter((playlist) => playlist.snippet.thumbnails.default).map(playlist => (
+                {playlists.filter((playlist) => playlist.snippet.thumbnails.default).map((playlist, index) => (
+                    <li key={playlist.id}>
                     <motion.button
-                        key={playlist.id}
                         className="cursor-pointer bg-gradient-to-b from-fuchsia-600 to-orange-400 text-white shadow-md rounded m-1 p-[2px] w-[220px] h-[76px] flex items-center gap-1.5 text-left hover:shadow-lg transition-shadow"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => { setSelectedPlaylist(playlist.snippet); fetchPlaylist(playlist.id); }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
                     >
                         <img
                             src={playlist.snippet.thumbnails.default.url}
@@ -213,6 +269,7 @@ export default function Home() {
                         />
                         <p className="font-semibold text-sm flex-1 line-clamp-2 break-words h-[2.4em] leading-tight">{playlist.snippet.title}</p>
                     </motion.button>
+                    </li>
                 ))}
             </motion.ul>
 
@@ -280,7 +337,8 @@ export default function Home() {
                                             <DownloadButton
                                                 videoId={`${video.snippet.resourceId.videoId}`}
                                                 videoTitle={video.snippet.title}
-                                                disabled={!downloadApiUp}
+                                                disabled={!(downloadApiUp && rate && rate.requests_remaining > 0) || fetchingRate}
+                                                onClick={() => onDownload()}
                                             />
                                         </div>
                                     </div>

@@ -6,7 +6,6 @@ export async function GET(
   { params }: { params: Promise<{ id: number }> }
 ) {  
   try {
-    // Get cookies from the request
     const headersO = await headers();
 
     const accessToken = headersO.get("authorization")?.replace("Bearer ", "");

@@ -1,17 +1,30 @@
 'use client';
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { RateLimit } from "@/app/home";
 
-export default function DownloadButton({ videoId, videoTitle, disabled }: { videoId: string, videoTitle: string, disabled: boolean }) {
+export default function DownloadButton({ videoId, videoTitle, disabled, onClick }: { videoId: string, videoTitle: string, disabled: boolean, onClick: () => void }) {
+    const session = useSession();
+
+    const token = useMemo(() => {
+        const accessToken = session.data?.user.accessToken;
+        return accessToken;
+    }, [session]);
+
     const [loading, setLoading] = useState(false);
     const [downloaded, setDownloaded] = useState(false);
 
     const handleDownload = async () => {
+        onClick();
         setLoading(true);
         const response = await fetch(`/api/download/${videoId}`, {
             method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
         });
         if (response.status === 200) {
             setDownloaded(true);
@@ -41,7 +54,7 @@ export default function DownloadButton({ videoId, videoTitle, disabled }: { vide
             onClick={handleDownload}
             disabled={loading || disabled || downloaded}
             className={`cursor-pointer px-2 py-1.5 rounded text-sm text-white font-medium flex items-center justify-center gap-1 w-full ${
-                loading || disabled
+                (loading || disabled) && !downloaded
                     ? "bg-gray-700 cursor-not-allowed"
                     : downloaded
                     ? "bg-green-500 cursor-default"
