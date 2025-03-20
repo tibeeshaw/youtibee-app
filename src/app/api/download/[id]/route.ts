@@ -13,8 +13,9 @@ export async function GET(
     const videoId = (await params).id;
 
     const baseUrl = process.env.DOWNLOAD_URL;
+    const secret = Buffer.from(process.env.DOWNLOAD_SECRET || "", "utf-8").toString("base64");
 
-    const url = `${baseUrl}/download/audio?url=https://www.youtube.com/watch?v=${videoId}&secret=${process.env.DOWNLOAD_SECRET}`
+    const url = `${baseUrl}/download/audio?url=https://www.youtube.com/watch?v=${videoId}&secret=${secret}`
 
       // Fetch the binary content
       const response = await fetch(url);
@@ -27,7 +28,7 @@ export async function GET(
       const headers = new Headers(response.headers);
       return new NextResponse(response.body, { headers });
 
-      
+
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
