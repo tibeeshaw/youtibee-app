@@ -26,7 +26,8 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async signIn({ account, profile }) {
       if (account?.provider === "google" && profile?.email) {
-        return ['thibautscholaert@gmail.com'].includes(profile.email)
+        // return ['thibautscholaert@gmail.com'].includes(profile.email)
+        return true;
       }
       return false; // Do different verification for other providers that don't have `email_verified`
 

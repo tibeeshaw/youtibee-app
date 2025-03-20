@@ -1,9 +1,9 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Popover from './popover';
 
 export default function UserDropdown({ session }: { session: any }) {

@@ -3,6 +3,8 @@ import DownloadButton from "@/components/DownloadButton";
 import { signIn, useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { AlertCircleIcon, CodeIcon, InfoIcon, RefreshCwIcon, StarIcon } from "lucide-react";
+import classnames from 'classnames';
 
 export type SnippetType = {
     publishedAt: string;
@@ -108,12 +110,12 @@ export type PlaylistItems = {
 export default function Home() {
     const session = useSession();
 
-    useEffect(() => {
-        if (session.status === 'unauthenticated') {
-            // If the user is not authenticated, force them to log in
-            signIn();
-        }
-    }, [session]);
+    // useEffect(() => {
+    //     if (session.status === 'unauthenticated') {
+    //         // If the user is not authenticated, force them to log in
+    //         signIn();
+    //     }
+    // }, [session]);
 
 
     const token = useMemo(() => {
@@ -220,35 +222,188 @@ export default function Home() {
 
     return (
         <div className="container mx-auto p-4">
-            <motion.h1
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-2xl font-bold mb-4 text-white"
-            >
-                Browse and download your youtube videos
-            </motion.h1>
+            <div className="flex-grow container mx-auto my-4">
+                <motion.section
+                    className="bg-gray-800/80 text-white break-words sm:p-6 p-2 rounded-lg shadow-lg"
+                >
+                    <motion.h1
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-3xl font-semibold mb-4 flex items-center gap-2"
+                    >
+                        Welcome to <span className="text-blue-300">YouTibee</span>!
+                    </motion.h1>
+                    <motion.h2
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="sm:text-xl font-semibold mb-4 flex items-center gap-2"
+                    >
+                        <InfoIcon className="w-6 h-6 text-blue-400" />
+                        Browse and download your youtube videos
+                    </motion.h2>
+                    <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="text-gray-300 mb-4"
+                    >
+                        This site showcases an application I developed. It is a technical demonstration that allows you to download YouTube videos as audio files for personal use only. This project is not intended for public distribution or commercialization. My main goal is to demonstrate my skills in web development and API integration, particularly with the YouTube API, as well as my ability to create useful tools.
+                    </motion.p>
 
+                    <motion.h3
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.7 }}
+                        className="text-2xl font-semibold mb-2 flex items-center gap-2"
+                    >
+                        <StarIcon className="w-5 h-5 text-yellow-400" />
+                        Important to know
+                    </motion.h3>
+                    <motion.ul
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.9 }}
+                        className="list-disc pl-6 space-y-2 text-gray-300"
+                    >
+                        <li>
+                            <strong className="text-red-400">For personal use only:</strong> This application is intended solely for personal use. It does not align with YouTube’s intention of allowing direct content downloads outside of the features offered by the platform (such as YouTube Premium). This application is a personal development project, and its public use would violate YouTube's terms of service.
+                        </li>
+                        <li>
+                            <strong className="text-green-400">Respect for copyright:</strong> The content downloaded through this application may be copyrighted. I want to emphasize that this project is not intended to infringe upon the rights of content creators. If you choose to use this tool, it is your responsibility to comply with copyright laws and the terms of service regarding the use of videos and audio.
+                        </li>
+                        <li>
+                            <strong className="text-blue-400">OAuth2 Screen and Security:</strong> When using the application, you'll be prompted to go through an OAuth2 screen to log in with your Google account and grant access to some of your data. The application uses the following scopes: <code>openid</code>, <code>email</code>, <code>profile</code>, and <code>https://www.googleapis.com/auth/youtube.readonly</code>. These scopes allow access to basic profile information and YouTube videos, but do not request sensitive data (such as search history or financial information).
+                        </li>
+                    </motion.ul>
+
+                    <motion.h3
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.1 }}
+                        className="text-2xl font-semibold mb-2 mt-4 flex items-center gap-2"
+                    >
+                        <AlertCircleIcon className="w-5 h-5 text-purple-400" />
+                        Why this warning is important
+                    </motion.h3>
+                    <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.3 }}
+                        className="text-gray-300"
+                    >
+                        The lack of Google validation means that the app has not been audited for security and privacy compliance according to Google’s standards for public applications. As a user, it's important to understand this risk before proceeding with any login. If you have any concerns, I recommend using a secondary account or one dedicated to this purpose.
+                    </motion.p>
+
+                    <motion.h3
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.5 }}
+                        className="text-2xl font-semibold mb-2 mt-4 flex items-center gap-2"
+                    >
+                        <CodeIcon className="w-5 h-5 text-teal-400" />
+                        Technical Stack
+                    </motion.h3>
+                    <motion.ul
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.7 }}
+                        className="list-disc pl-6 space-y-2 text-gray-300"
+                    >
+                        <li>
+                            <strong className="text-indigo-400">Web application on Vercel:</strong> The frontend application is coded with <code>Next.js</code>. It uses the YouTube API to fetch user playlists and liked videos.
+                        </li>
+                        <li>
+                            <strong className="text-pink-400">Download API on Render:</strong> The backend application is coded with <code>Python</code> and packaged with <code>Docker</code>. It uses <code>yt-dlp</code> for downloading YouTube videos and <code>Redis</code> for rate limiting.
+                        </li>
+                    </motion.ul>
+                </motion.section>
+            </div>
+
+            <motion.hr
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                className="my-8 border-t border-gray-700"
+            />
+
+            {session.status === 'authenticated' ? 
+            <>
             {rate && (
+                <>
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
+                    // transition={{ delay: 1.2 }}
                     className="bg-gray-800/80 text-white p-4 rounded-lg shadow-md mb-4"
                 >
-                    <p className="text-sm">
-                        <strong>Requests Used:</strong> {rate.requests_used} / {rate.limit}
-                    </p>
-                    <p className="text-sm">
-                        <strong>Requests Remaining:</strong> {rate.requests_remaining}
-                    </p>
-                    <p className="text-sm">
-                        <strong>Rate Limit Window:</strong> {rate.window_seconds} seconds
-                    </p>
+                    <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                        <InfoIcon className="w-5 h-5 text-blue-400" />
+                        Rate Limit Information
+                        <motion.button
+                        onClick={async () => {        setFetchingRate(true);
+                            await fetchRate();         setFetchingRate(false);
+                        }}
+                        disabled={fetchingRate}
+                        className={classnames(
+                            "cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium px-2 py-1 rounded flex items-center gap-1",
+                            { "opacity-50 !cursor-not-allowed": fetchingRate }
+                        )}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <RefreshCwIcon className="w-5 h-5 text-white" />
+                        </motion.button>
+                    </h3>
+                    <div className="space-y-2">
+                        <p className="text-sm flex items-center gap-2">
+                            <StarIcon className="w-4 h-4 text-yellow-400" />
+                            <strong>Requests Used:</strong> <span className="text-yellow-300">{rate.requests_used}</span> / {rate.limit}
+                        </p>
+                        <p 
+                         className={classnames("text-sm flex items-center gap-2")}>
+                            <AlertCircleIcon className={classnames("w-4 h-4", 
+                                 rate.requests_remaining === 0 
+                                 ? "text-red-300" 
+                                 : rate.requests_remaining === 1 
+                                 ? "text-orange-300" 
+                                 : "text-green-300"
+                            )} />
+                            <strong>Requests Remaining:</strong> 
+                            <span 
+                               className={
+                                classnames( 
+                                    rate.requests_remaining === 0 
+                                        ? "text-red-300" 
+                                        : rate.requests_remaining === 1 
+                                        ? "text-orange-300" 
+                                        : "text-green-300"
+                    )
+                               }
+                            >
+                                {rate.requests_remaining}
+                            </span>
+                        </p>
+                        <p className="text-sm flex items-center gap-2">
+                            <CodeIcon className="w-4 h-4 text-purple-400" />
+                            <strong>Rate Limit Window:</strong> <span className="text-purple-300">{rate.window_seconds} seconds</span>
+                        </p>
+                    </div>
                 </motion.div>
+                
+            <motion.hr
+            initial={{ width: 0 }}
+            animate={{ width: "100%" }}
+            // transition={{ delay: 1.5 }}
+            className="my-8 border-t border-gray-700"
+        />
+        </>
             )}
 
             <motion.ul
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                // transition={{ delay: 2 }}
                 className="grid grid-rows-3 grid-flow-col gap-1 overflow-x-auto pb-4"
             >
                 {playlists.filter((playlist) => playlist.snippet.thumbnails.default).map((playlist, index) => (
@@ -275,6 +430,13 @@ export default function Home() {
 
             <AnimatePresence>
                 {selectedPlaylist && playlist && (
+                    <>
+                    
+            <motion.hr
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                className="my-8 border-t border-gray-700"
+            />
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -346,6 +508,7 @@ export default function Home() {
                             ))}
                         </motion.ul>
                     </motion.div>
+                    </>
                 )}
             </AnimatePresence>
 
@@ -370,6 +533,61 @@ export default function Home() {
                     </motion.div>
                 )}
             </AnimatePresence> */}
+            </>: 
+            (session.status === 'loading' ? <>
+            <div className="flex justify-center items-center h-full">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    // transition={{ duration: 0.5 }}
+                    className="flex flex-col items-center"
+                >
+                    <svg
+                        className="animate-spin h-8 w-8 text-blue-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                        ></circle>
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                    </svg>
+                </motion.div>
+            </div>
+            </> : 
+            <div className="flex justify-center items-center h-full">
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-gray-800/80 text-white p-6 rounded-lg shadow-lg text-center"
+                >
+                    <h2 className="text-2xl font-semibold mb-4">Welcome to YouTibee</h2>
+                    <p className="text-gray-300 mb-4">
+                        Please sign in to access your playlists and liked videos.
+                    </p>
+                    <motion.button
+                        onClick={() => signIn()}
+                        className="bg-blue-500 text-white font-medium px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        Sign In
+                    </motion.button>
+                </motion.div>
+            </div>
+            )
+            }
         </div>
     );
 }
